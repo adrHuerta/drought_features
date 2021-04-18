@@ -16,6 +16,13 @@ PRECIP[PRECIP < 0.1] <- 0
 spi.para <- SCI::fitSCI(PRECIP, first.mon = 1, time.scale = 6, distr = "gamma", p0 = TRUE)
 spi <- SCI::transformSCI(PRECIP, first.mon = 1, obj = spi.para)
 
+## creting XTS time serie
+spi_dates <- seq(as.Date("1951-01-01"), length.out = length(date), by = "month")
+spi <- xts::xts(spi, spi_dates)
+
+## plot time series
+xts::plot.xts(spi)
+lattice::xyplot(spi)
 
 ## drough features
 dght_features <- run_theory(time_serie = spi[6:length(spi)], 
@@ -24,16 +31,21 @@ dght_features <- run_theory(time_serie = spi[6:length(spi)],
 dght_features$Duration
 dght_features$Severity
 dght_features$Intesity
+dght_features$Date_Ini_Ev
+dght_features$Date_Fin_Ev
 dght_features$Interarrival
 
 ## plot
+
 library(ggplot2)
 
 lapply(dght_features %>% names(), 
        function(x){
          data.frame(value = dght_features[[x]], 
                     feature = x) 
-         }) %>% do.call(rbind, .) %>%
+         }) %>% 
+  .[c(1,2,3, 6)] %>% # deleting Dates output to plot
+  do.call(rbind, .) %>%
   
   ggplot() + 
   facet_wrap(~feature, "free", nrow = 2, ncol = 2) + 

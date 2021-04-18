@@ -18,7 +18,9 @@ run_theory <- function(time_serie,
       
       data.frame(D = dim(z)[1],
                  S = abs(sum(z$time_serie)),
-                 I = abs(sum(z$time_serie))/dim(z)[1])
+                 I = abs(sum(z$time_serie))/dim(z)[1],
+                 date_ini = row.names(z)[1],
+                 date_fin = row.names(z)[nrow(z)])
       
     }) %>% do.call(rbind, .) -> df1
   
@@ -61,6 +63,8 @@ run_theory <- function(time_serie,
   return(list(Duration = as.numeric(df1$D),
               Severity = as.numeric(df1$S),
               Intesity = as.numeric(df1$I),
+              Date_Ini_Ev = as.character(df1$date_ini),
+              Date_Fin_Ev = as.character(df1$date_fin),
               Interarrival = as.numeric(Int)))
   
 }
